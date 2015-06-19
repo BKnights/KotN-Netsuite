@@ -16,6 +16,7 @@ declare function nlapiSearchRecord(type : string, searchid? : string, srchFilter
 declare function nlapiSearchRecord(type : string, searchid? : string, srchFilters? : nlobjSearchFilter[], column? : nlobjSearchColumn): nlobjSearchResult[];
 declare function nlapiSearchRecord(type : string, searchid? : string, srchFilters? : nlobjSearchFilter[], columns? : nlobjSearchColumn[]): nlobjSearchResult[];
 declare function nlapiCreateSearch(type : string, srchFilters? : nlobjSearchFilter[], columns? : nlobjSearchColumn[]): nlobjSearch;
+declare function nlapiLoadSearch(type:string, id:string):nlobjSearch;
 declare function nlapiSearchGlobal(keywords :string): any[];
 declare function nlapiSearchDuplicate(type :string, fields :string[], id :string): any[];
 declare function nlapiTransformRecord(type :string, id : string, transformType : string, transformValues? : Object): nlobjRecord;
@@ -32,7 +33,7 @@ declare function nlapiAttachRecord(type1 : string, id1 :string, type2 :string, i
 declare function nlapiDetachRecord(type1 :string, id1 :string, type2 :string, id2 :string, properties: Object): void;
 declare function nlapiResolveURL(type :string, subtype : string, id? : string, pagemode? : boolean): string;
 declare function nlapiSetRedirectURL(type : string, subtype : string, id? : string, pagemode? : boolean, parameters? : Object): void;
-declare function nlapiRequestURL(url : string, postdata? : any , headers? : any, callbackOrMethod? : any): nlobjResponse;
+declare function nlapiRequestURL(url : string, postdata? : any , headers? : any, callbackOrMethod? : any, httpMethod? : string): nlobjResponse;
 declare function nlapiGetContext() : nlobjContext;
 declare function nlapiGetUser() : string;
 declare function nlapiGetRole() : string;
@@ -41,7 +42,7 @@ declare function nlapiGetLocation(): void;
 declare function nlapiGetSubsidiary(): void;
 declare function nlapiGetRecordType(): string;
 declare function nlapiGetRecordId(): string;
-declare function nlapiSendEmail(from : string, to : string, subject : string, body : string, cc? : any, bcc? : any, records? : any, files? : any): void;
+declare function nlapiSendEmail(from : string, to : string, subject : string, body : string, cc? : any, bcc? : any, records? : any, files? : any, notifySenderOnBounce?:boolean, internalOnly?:boolean, replyTo?:string): void;
 declare function nlapiSendCampaignEmail(campaigneventid :string, recipientid :string): void;
 declare function nlapiSendFax(from :string, to :string, subject :string, body :string, records :string, files :string[]): void;
 declare function nlapiGetField(fldnam :string): void;
@@ -105,8 +106,9 @@ declare function nlapiDeleteFile(id: string): void;
 declare function nlapiCreateFile(name: string, type :string, contents: string): nlobjFile;
 declare function nlapiMergeRecord(id : string, baseType : string, baseId : string, altType? : string, altId? : string, fields? :Object): nlobjFile;
 declare function nlapiPrintRecord(type : string, id : string, format : string, properties?:Object): nlobjFile;
-declare function nlapiXMLToPDF(input:Node): nlobjFile;
+declare function nlapiXMLToPDF(input:string): nlobjFile;
 declare function nlapiCreateTemplateEngine(type :string, enginetype :string): void;
+declare function nlapiCreateTemplateRenderer() : nlobjTemplateRenderer;
 declare function nlapiLogExecution(type : string, title : string, details? : any): void;
 declare function nlapiScheduleScript(script :string , deployment :string, parameters? : any):string;
 declare function nlapiOutboundSSO(ssoAppKey:string): void;
@@ -220,6 +222,7 @@ interface nlobjCSVImport{
     setMapping(savedImport:string):void;
     setOption(option:string, value:string):void;
     setPrimaryFile(file:string):void;
+    setPrimaryFile(file:nlobjFile):void;
     setQueue(queueNum:string):void;
 }
 
@@ -299,7 +302,7 @@ interface nlobjField{
 	setDefaultValue(value : string) : nlobjField;
 	setDisplaySize(width : number, height? : number) : nlobjField;
 	setDisplayType(type : string) : nlobjField;
-	setHelpText(help : number, inline? : boolean) : nlobjField;
+	setHelpText(help : string, inline? : boolean) : nlobjField;
 	setLabel(label : string) : nlobjField;
 	setLayoutType(type : string, breaktype : string) : nlobjField;
 	setLinkText(text : string) : nlobjField;
@@ -535,5 +538,13 @@ setPercentComplete(pct :string) : void;
 setSessionObject(name : string, value : any) :void;
 setSetting(type : string, name : string, value : string) : void;
 
+}
+
+interface nlobjTemplateRenderer{
+	setTemplate(templateBody : string) : void;
+	addRecord(varName:string, record:nlobjRecord) : void;
+	addSearchResults(varName:string, resultSet: nlobjSearchResult[]) :void;
+	renderToString() : string;
+	renderToResponse(resp:nlobjResponse) : void;
 }
 

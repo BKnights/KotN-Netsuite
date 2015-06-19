@@ -27,16 +27,19 @@ function simpleBatch(arr, proc, reserve, maxMinutes) {
     }
 }
 
-function dynamicBatch(arr, proc, reserve, maxMinutes, beforeYield, afterYield) {
-    if (!arr || !arr.length)
-        return;
+function batchIterator(iter, proc, reserve, maxMinutes, beforeYield, afterYield) {
     var maxUsage = reserve || 0;
     var breakTime = maxMinutes ? (new Date().getTime() + 60000 * maxMinutes) : 0;
     var startUsage = nlapiGetContext().getRemainingUsage();
+    var isScheduled = "scheduled" == nlapiGetContext().getExecutionContext();
     var elemsProcessed = 0;
-    var elem = arr.shift();
+    var elem = iter();
     while (elem && typeof elem != 'undefined') {
         if (startUsage < (maxUsage + 20) || (breakTime && new Date().getTime() > breakTime)) {
+            if (!isScheduled) {
+                nlapiLogExecution("SYSTEM", "non-Scheduled run ending with " + startUsage + " units remaining");
+                break;
+            }
             if (beforeYield)
                 beforeYield();
             var ys = nlapiYieldScript();
@@ -49,16 +52,25 @@ function dynamicBatch(arr, proc, reserve, maxMinutes, beforeYield, afterYield) {
             if (afterYield)
                 afterYield();
         }
-        proc(elem);
+        proc(elem, elemsProcessed);
         elemsProcessed++;
-        if (nlapiGetContext().getExecutionContext() == "scheduled")
-            nlapiGetContext().setPercentComplete(((100 * elemsProcessed) / (elemsProcessed + arr.length)).toFixed(1));
-
         var endUsage = nlapiGetContext().getRemainingUsage();
+        if (isScheduled)
+            nlapiGetContext().setPercentComplete((100 * (startUsage - endUsage) / (startUsage)).toFixed(1));
         var runUsage = startUsage - endUsage;
         if (maxUsage < runUsage)
             maxUsage = runUsage;
         startUsage = endUsage;
-        elem = arr.shift();
+        elem = iter();
     }
+}
+
+function dynamicBatch(arr, proc, reserve, maxMinutes, beforeYield, afterYield) {
+    if (!arr || !arr.length)
+        return;
+    batchIterator(function () {
+        if (arr.length)
+            return arr.shift();
+        return null;
+    }, proc, reserve, maxMinutes, beforeYield, afterYield);
 }
