@@ -29,7 +29,7 @@
 		var fillStandards = function (suppliedType, rec){
 			if(rec.getFieldValue('trandate') && suppliedType != 'transaction' ) renderer.addRecord('transaction', rec);	
 			if(rec.getFieldValue('entityid') && suppliedType != 'entity') renderer.addRecord('entity', rec);
-			if('supportcase' == rec.getRecordType() && suppliedType != 'case') renderer.addRecord('case', 'rec');
+			if('supportcase' == rec.getRecordType() && suppliedType != 'case') renderer.addRecord('case', rec);
 		};
 
 		if(secType) {

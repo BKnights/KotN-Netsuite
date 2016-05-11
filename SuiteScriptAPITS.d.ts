@@ -9,13 +9,13 @@ declare function nlapiSubmitRecord(record :nlobjRecord, overrides : clientSubmit
 declare function nlapiDeleteRecord(type : string, id : string): void;
 declare function nlapiSearchRecord(type : string, searchid? : number, srchFilter? : nlobjSearchFilter, column? : nlobjSearchColumn): nlobjSearchResult[];
 declare function nlapiSearchRecord(type : string, searchid? : number, srchFilter? : nlobjSearchFilter, columns? : nlobjSearchColumn[]): nlobjSearchResult[];
-declare function nlapiSearchRecord(type : string, searchid? : number, srchFilters? : nlobjSearchFilter[], column? : nlobjSearchColumn): nlobjSearchResult[];
-declare function nlapiSearchRecord(type : string, searchid? : number, srchFilters? : nlobjSearchFilter[], columns? : nlobjSearchColumn[]): nlobjSearchResult[];
+declare function nlapiSearchRecord(type : string, searchid? : number, srchFilters? : Object[], column? : nlobjSearchColumn): nlobjSearchResult[];
+declare function nlapiSearchRecord(type : string, searchid? : number, srchFilters? : Object[], columns? : nlobjSearchColumn[]): nlobjSearchResult[];
 declare function nlapiSearchRecord(type : string, searchid? : string, srchFilter? : nlobjSearchFilter, column? : nlobjSearchColumn): nlobjSearchResult[];
 declare function nlapiSearchRecord(type : string, searchid? : string, srchFilter? : nlobjSearchFilter, columns? : nlobjSearchColumn[]): nlobjSearchResult[];
-declare function nlapiSearchRecord(type : string, searchid? : string, srchFilters? : nlobjSearchFilter[], column? : nlobjSearchColumn): nlobjSearchResult[];
-declare function nlapiSearchRecord(type : string, searchid? : string, srchFilters? : nlobjSearchFilter[], columns? : nlobjSearchColumn[]): nlobjSearchResult[];
-declare function nlapiCreateSearch(type : string, srchFilters? : nlobjSearchFilter[], columns? : nlobjSearchColumn[]): nlobjSearch;
+declare function nlapiSearchRecord(type : string, searchid? : string, srchFilters? : Object[], column? : nlobjSearchColumn): nlobjSearchResult[];
+declare function nlapiSearchRecord(type : string, searchid? : string, srchFilters? : Object[], columns? : nlobjSearchColumn[]): nlobjSearchResult[];
+declare function nlapiCreateSearch(type : string, srchFilters? : Object[], columns? : nlobjSearchColumn[]): nlobjSearch;
 declare function nlapiLoadSearch(type:string, id:string):nlobjSearch;
 declare function nlapiSearchGlobal(keywords :string): any[];
 declare function nlapiSearchDuplicate(type :string, fields :string[], id :string): any[];
@@ -45,7 +45,7 @@ declare function nlapiGetRecordId(): string;
 declare function nlapiSendEmail(from : string, to : string, subject : string, body : string, cc? : any, bcc? : any, records? : any, files? : any, notifySenderOnBounce?:boolean, internalOnly?:boolean, replyTo?:string): void;
 declare function nlapiSendCampaignEmail(campaigneventid :string, recipientid :string): void;
 declare function nlapiSendFax(from :string, to :string, subject :string, body :string, records :string, files :string[]): void;
-declare function nlapiGetField(fldnam :string): void;
+declare function nlapiGetField(fldnam :string): nlobjField;
 declare function nlapiGetMatrixField(type :string, fldnam :string, column :string): void;
 declare function nlapiGetLineItemField(type : string, fldnam : string, linenum : number): nlobjField;
 declare function nlapiGetLineItemMatrixField(type : string, fldnam : string, linenum : number, column : number) : string;
@@ -328,7 +328,7 @@ interface nlobjFieldGroup{
 interface nlobjSubList{
 
 	addButton(name : string, label : string, script? : string) : nlobjButton;
-	addField(name : string, type : string, label : string, source? : string) : nlobjField;
+	addField(name : string, type : string, label? : string, source? : string, fieldGroup?:string) : nlobjField;
 	addMarkAllButtons() : void;
 	addRefreshButton() : nlobjButton;
 	getLineItemCount(group) : number;
@@ -388,6 +388,8 @@ interface nlobjRecord{
 	getFieldValue(name : string) : string;
 	getFieldValues(name : string) : string[];
 	getId() : string;
+	getCurrentLineItemValue(type : string, fldnam : string) : string;
+	getCurrentLineItemValues(type : string, fldnam : string) : string[];
 	getLineItemCount(group : string) : number;
 	getLineItemField(group : string, fldnam : string, linenum : number) : nlobjField;
 	getLineItemMatrixField(group : string, fldnam : string, linenum : number, column : string) : nlobjField;
@@ -403,10 +405,13 @@ interface nlobjRecord{
 	removeLineItem(group, linenum:number);
 	removeCurrentLineItemSubrecord(sublist, fldname);
 	removeSubrecord(fldname);
-	selectLineItem(group, linenum:number);
+	selectLineItem(group : string, linenum:number);
 	selectNewLineItem(group);
 	setCurrentLineItemMatrixValue(group, fldnam :string, column, value :string);
-	setCurrentLineItemValue(group, name, value :string);
+	setCurrentLineItemValue(group : string, fldnam :string, value :string, firefieldchanged? : boolean, synchronous? : boolean) : void;
+	setCurrentLineItemValue(group : string, fldnam :string, value :number, firefieldchanged? : boolean, synchronous? : boolean) : void;
+	removeLineItem(group: string, linenumber: number, ignoreRecalc ? : boolean);
+	commitLineItem(group : string, ignoreRecalc? : boolean);
 	setFieldText(name :string, text :string);
 	setFieldTexts(name :string, text :string);
 	setFieldValue(name :string, value :string);
