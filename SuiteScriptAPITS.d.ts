@@ -23,14 +23,17 @@ declare function nlapiTransformRecord(type :string, id : string, transformType :
 declare function nlapiTransformRecord(type :string, id : number, transformType : string, transformValues? : Object): nlobjRecord;
 declare function nlapiLookupField(type :string , id :string, fields :string[], text?: boolean): any;
 declare function nlapiLookupField(type :string , id :string, field :string, text?: boolean): string;
+
 declare function nlapiSubmitField(type : string, id : string, fields : string[], values : string[], doSourcing? : boolean): void;
 declare function nlapiSubmitField(type : string, id : string, field : string, value : string, doSourcing? : boolean): void;
 declare function nlapiSubmitField(type : string, id : string, fields : string[], values : string[], props:serverSubmitFieldFlags): void;
 declare function nlapiSubmitField(type : string, id : string, field : string, value : string, props:serverSubmitFieldFlags): void;
+declare function nlapiSubmitField(type : string, id : string, field : string, value : number, props:serverSubmitFieldFlags): void;
 declare function nlapiSubmitField(type : string, id : string, fields : string[], values : string[], props:clientSubmitFieldFlags): void;
 declare function nlapiSubmitField(type : string, id : string, field : string, value : string, props:clientSubmitFieldFlags): void;
+
 declare function nlapiAttachRecord(type1 : string, id1 :string, type2 :string, id2 :string, properties? : Object): void;
-declare function nlapiDetachRecord(type1 :string, id1 :string, type2 :string, id2 :string, properties: Object): void;
+declare function nlapiDetachRecord(type1 :string, id1 :string, type2 :string, id2 :string, properties?: Object): void;
 declare function nlapiResolveURL(type :string, subtype : string, id? : string, pagemode? : boolean): string;
 declare function nlapiSetRedirectURL(type : string, subtype : string, id? : string, pagemode? : boolean, parameters? : Object): void;
 declare function nlapiRequestURL(url : string, postdata? : any , headers? : any, callbackOrMethod? : any, httpMethod? : string): nlobjResponse;
@@ -66,7 +69,7 @@ declare function nlapiGetLineItemMatrixValue(type :string, fldnam :string, linen
 declare function nlapiGetLineItemValue(type : string, fldnam : string, linenum : number): string;
 declare function nlapiSetLineItemValue(type : string, fldnam : string, linenum : number, value : string): void;
 declare function nlapiGetLineItemText(type : string, fldnam : string, linenum : number): string;
-declare function nlapiFindLineItemValue(type :string, fldnam :string, val :string): void;
+declare function nlapiFindLineItemValue(type :string, fldnam :string, val :string): number;
 declare function nlapiFindLineItemMatrixValue(type :string, fldnam :string, column:number, val :string): void;
 declare function nlapiGetMatrixCount(type :string, fldnam :string): number;
 declare function nlapiGetLineItemCount(type :string): number;
