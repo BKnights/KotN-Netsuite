@@ -110,7 +110,6 @@ declare function nlapiCreateFile(name: string, type :string, contents: string): 
 declare function nlapiMergeRecord(id : string, baseType : string, baseId : string, altType? : string, altId? : string, fields? :Object): nlobjFile;
 declare function nlapiPrintRecord(type : string, id : string, format : string, properties?:Object): nlobjFile;
 declare function nlapiXMLToPDF(input:string): nlobjFile;
-declare function nlapiCreateTemplateEngine(type :string, enginetype :string): void;
 declare function nlapiCreateTemplateRenderer() : nlobjTemplateRenderer;
 declare function nlapiCreateEmailMerger(templateId:string) : nlobjEmailMerger;
 declare function nlapiLogExecution(type : string, title : string, details? : any): void;
