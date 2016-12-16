@@ -112,6 +112,7 @@ declare function nlapiPrintRecord(type : string, id : string, format : string, p
 declare function nlapiXMLToPDF(input:string): nlobjFile;
 declare function nlapiCreateTemplateEngine(type :string, enginetype :string): void;
 declare function nlapiCreateTemplateRenderer() : nlobjTemplateRenderer;
+declare function nlapiCreateEmailMerger(templateId:string) : nlobjEmailMerger;
 declare function nlapiLogExecution(type : string, title : string, details? : any): void;
 declare function nlapiScheduleScript(script :string , deployment :string, parameters? : any):string;
 declare function nlapiOutboundSSO(ssoAppKey:string): void;
@@ -554,5 +555,19 @@ interface nlobjTemplateRenderer{
 	addSearchResults(varName:string, resultSet: nlobjSearchResult[]) :void;
 	renderToString() : string;
 	renderToResponse(resp:nlobjResponse) : void;
+}
+
+interface nlobjEmailMerger {
+	setCustomeRecord(recordType: string, recordId:string) : void;
+	setEntity(entityType: string, entityId: string) : void;
+	setRecipient(recipientType: string, recipientId: string) : void;
+	setSupportCase(caseId: string) : void;
+	setTransaction(transactionId: string) : void;
+	merge() : nlobjMergeResult;
+}
+
+interface nlobjMergeResult{
+	getBody() : string;
+	getSubject() : string;
 }
 
