@@ -10,5 +10,6 @@ Not great to use if you have a number of developers in your account. All the *.d
 - batchProcess.js handles governance for re-scheduling a scheduled script. Most use cases now superseded by SimpleBatch.js
 - kotnMergeTemplate is meant as a library to provide a drop-in replacement for scripts using nlapiMergeRecord. This script detects whether the template Id refers to an old CRMSDK template or a Scriptable Template and provides a file similar to the one returned from nlapiMergeRecord.
 
+- exposeImageNames and exposeItemTemplate are the sources for a couple of bundles 156149 and 41518 respectively. These copy some values from item record fields to expose them for search criteria and results.
 
 
