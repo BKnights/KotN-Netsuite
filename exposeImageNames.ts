@@ -33,6 +33,9 @@ module kotnShadowImageNames{
 					new nlobjSearchFilter('parent', null, 'is', nlapiGetRecordId()),
 					new nlobjSearchFilter('matrixchild', null, 'is', 'T'),
 					new nlobjSearchFilter('isinactive', null, 'is', 'F')
+				],[
+					new nlobjSearchColumn('custitem_kotn_image_name'),
+					new nlobjSearchColumn('custitem_kotn_thumbnail_name')
 				]);
 				if(childItems) {
 					var updateFields : string[] = [], updateValues : string[] = [];
@@ -45,9 +48,15 @@ module kotnShadowImageNames{
 						updateValues.push(thumbnailName);
 					}
 					nlapiLogExecution("DEBUG", "Updating " + childItems.length +" for image names");
-					childItems.forEach(function(c){
-						nlapiSubmitField(c.getRecordType(), c.getId(), updateFields, updateValues, {disabletriggers:true, enablesourcing:false});
-					});
+					try{
+						childItems.forEach(function(c){
+							if(c.getValue('custitem_kotn_image_name') == imageName && c.getValue('custitem_kotn_thumbnail_name') == thumbnailName) return;
+							nlapiSubmitField(c.getRecordType(), c.getId(),updateFields, updateValues,{disabletriggers:true, enablesourcing:false});
+						});
+					}catch(e){
+						// probably governance. 
+						nlapiLogExecution('ERROR', 'updating child items', (e.message || e.toString()) + (e.getStackTrace ? (' \n \n' + e.getStackTrace().join(' \n')) : ''));
+					}
 				}
 			}
 		}
@@ -96,7 +105,7 @@ module kotnShadowImageNames{
 //			nlapiLogExecution('DEBUG', 'using formula to find children to update', filters.slice(-1)[0].getFormula());
 //		}
 		
-		var childItems = nlapiSearchRecord('item', null, filters);
+		var childItems = nlapiSearchRecord('item', null, filters, [new nlobjSearchColumn('custitem_kotn_image_name'), new nlobjSearchColumn('custitem_kotn_thumbnail_name')]);
 		if(childItems) {
 			var updateFields : string[] = [], updateValues : string[] = [];
 			if(imageName){
@@ -108,9 +117,15 @@ module kotnShadowImageNames{
 				updateValues.push(thumbnailName);
 			}
 			nlapiLogExecution('DEBUG', 'applying image update to '+ childItems.length, JSON.stringify(updateFields) +'\n\twith\n'+ JSON.stringify(updateValues));
-			childItems.forEach(function(c){
-				nlapiSubmitField(c.getRecordType(), c.getId(),updateFields, updateValues,{disabletriggers:true, enablesourcing:false});
-			});
+			try{
+				childItems.forEach(function(c){
+					if(c.getValue('custitem_kotn_image_name') == imageName && c.getValue('custitem_kotn_thumbnail_name') == thumbnailName) return;
+					nlapiSubmitField(c.getRecordType(), c.getId(),updateFields, updateValues,{disabletriggers:true, enablesourcing:false});
+				});
+			}catch(e){
+				// probably governance. 
+				nlapiLogExecution('ERROR', 'updating child items', (e.message || e.toString()) + (e.getStackTrace ? (' \n \n' + e.getStackTrace().join(' \n')) : ''));
+			}
 		}
 					  
 	}
