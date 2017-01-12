@@ -22,45 +22,44 @@ var kotnShadowImageNames;
         if (type == 'edit' || type == 'create' || type == 'xedit') {
             if (!nlapiGetContext().getFeature('MATRIXITEMS'))
                 return;
-            var oldRec = nlapiGetOldRecord();
-            var imageName = nlapiGetFieldValue('custitem_kotn_image_name');
-            if (imageName && oldRec && oldRec.getFieldValue('custitem_kotn_image_name') == imageName)
-                imageName = null;
-            var thumbnailName = nlapiGetFieldValue('custitem_kotn_thumbnail_name');
-            if (thumbnailName && oldRec && oldRec.getFieldValue('custitem_kotn_thumbnail_name') == thumbnailName)
-                thumbnailName = null;
-            if (imageName || thumbnailName) {
-                var childItems = nlapiSearchRecord('item', null, [
-                    new nlobjSearchFilter('parent', null, 'is', nlapiGetRecordId()),
-                    new nlobjSearchFilter('matrixchild', null, 'is', 'T'),
-                    new nlobjSearchFilter('isinactive', null, 'is', 'F')
-                ], [
-                    new nlobjSearchColumn('custitem_kotn_image_name'),
-                    new nlobjSearchColumn('custitem_kotn_thumbnail_name')
-                ]);
-                if (childItems) {
-                    var updateFields = [], updateValues = [];
-                    if (imageName) {
-                        updateFields.push('custitem_kotn_image_name');
-                        updateValues.push(imageName);
-                    }
-                    if (thumbnailName) {
-                        updateFields.push('custitem_kotn_thumbnail_name');
-                        updateValues.push(thumbnailName);
-                    }
-                    nlapiLogExecution("DEBUG", "Updating " + childItems.length + " for image names");
-                    try {
+            try {
+                var oldRec = nlapiGetOldRecord();
+                var imageName = nlapiGetFieldValue('custitem_kotn_image_name');
+                if (imageName && oldRec && oldRec.getFieldValue('custitem_kotn_image_name') == imageName)
+                    imageName = null;
+                var thumbnailName = nlapiGetFieldValue('custitem_kotn_thumbnail_name');
+                if (thumbnailName && oldRec && oldRec.getFieldValue('custitem_kotn_thumbnail_name') == thumbnailName)
+                    thumbnailName = null;
+                if (nlapiGetRecordId() && (imageName || thumbnailName)) {
+                    var childItems = nlapiSearchRecord('item', null, [
+                        new nlobjSearchFilter('parent', null, 'anyof', [nlapiGetRecordId()]),
+                        new nlobjSearchFilter('matrixchild', null, 'is', 'T'),
+                        new nlobjSearchFilter('isinactive', null, 'is', 'F')
+                    ], [
+                        new nlobjSearchColumn('custitem_kotn_image_name'),
+                        new nlobjSearchColumn('custitem_kotn_thumbnail_name')
+                    ]);
+                    if (childItems) {
+                        var updateFields = [], updateValues = [];
+                        if (imageName) {
+                            updateFields.push('custitem_kotn_image_name');
+                            updateValues.push(imageName);
+                        }
+                        if (thumbnailName) {
+                            updateFields.push('custitem_kotn_thumbnail_name');
+                            updateValues.push(thumbnailName);
+                        }
+                        nlapiLogExecution("DEBUG", "Updating " + childItems.length + " for image names");
                         childItems.forEach(function (c) {
                             if (c.getValue('custitem_kotn_image_name') == imageName && c.getValue('custitem_kotn_thumbnail_name') == thumbnailName)
                                 return;
                             nlapiSubmitField(c.getRecordType(), c.getId(), updateFields, updateValues, { disabletriggers: true, enablesourcing: false });
                         });
                     }
-                    catch (e) {
-                        // probably governance. 
-                        nlapiLogExecution('ERROR', 'updating child items', (e.message || e.toString()) + (e.getStackTrace ? (' \n \n' + e.getStackTrace().join(' \n')) : ''));
-                    }
                 }
+            }
+            catch (e) {
+                nlapiLogExecution('ERROR', 'updating child items', (e.message || e.toString()) + (e.getStackTrace ? (' \n \n' + e.getStackTrace().join(' \n')) : ''));
             }
         }
     }
@@ -90,7 +89,7 @@ var kotnShadowImageNames;
         if (!nlapiGetContext().getFeature('MATRIXITEMS'))
             return;
         var filters = [
-            new nlobjSearchFilter('parent', null, 'is', recId),
+            new nlobjSearchFilter('parent', null, 'anyof', [recId]),
             new nlobjSearchFilter('matrixchild', null, 'is', 'T'),
             new nlobjSearchFilter('isinactive', null, 'is', 'F')
         ];
