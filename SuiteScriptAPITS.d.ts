@@ -2,8 +2,7 @@ declare function nlapiCopyRecord(type:string, id:string, initializeValues?:Objec
 declare function nlapiLoadRecord(type: string, id: string, initializeValues? : any): nlobjRecord;
 declare function nlapiCreateRecord(type: string, initializeValues?: any): nlobjRecord;
 declare function nlapiSubmitRecord(record :nlobjRecord, doSourcing? : boolean, ignoreMandatoryFields? : boolean): string;
-declare function nlapiSubmitRecord(record :nlobjRecord, overrides? : Object): string;
-declare function nlapiSubmitRecord(record :nlobjRecord, overrides : serverSubmitRecordFlags): string;
+declare function nlapiSubmitRecord(record :nlobjRecord, overrides? : serverSubmitRecordFlags): string;
 declare function nlapiSubmitRecord(record :nlobjRecord, overrides : clientSubmitRecordFlags): string;
 
 declare function nlapiDeleteRecord(type : string, id : string): void;
@@ -381,7 +380,7 @@ interface nlobjRecord{
 	getCurrentLineItemValues(type : string, fldname : string) : string[];
 	editSubrecord(fldname : string);
 	findLineItemMatrixValue(group : string, fldnam : string, column : string, val : string);
-	findLineItemValue(group : string, fldnam : string, value : string);
+	findLineItemValue(group : string, fldnam : string, value : string) : number;
 	getAllFields();
 	getAllLineItemFields(group : string);
 	getCurrentLineItemMatrixValue(group : string, fldnam : string, column : string) : string;
@@ -419,6 +418,7 @@ interface nlobjRecord{
 	setFieldTexts(name :string, text :string);
 	setFieldValue(name :string, value :string);
 	setFieldValues(name :string, value :string);
+	setDateTimeValue(name :string, value :string, tz:string|number);
 	setLineItemValue(group :string, name :string, linenum :number, value :string);
 	setMatrixValue(group, fldnam :string, column :string, value :string);
 	viewCurrentLineItemSubrecord(sublist :string, fldname :string);
