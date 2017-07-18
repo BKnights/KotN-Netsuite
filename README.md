@@ -12,4 +12,5 @@ Not great to use if you have a number of developers in your account. All the *.d
 
 - exposeImageNames and exposeItemTemplate are the sources for a couple of bundles 156149 and 41518 respectively. These copy some values from item record fields to expose them for search criteria and results.
 
-
+- calc*Dates functions are examples of doing business day calculations. 
+ Originally written to calculate expected delivery dates. calcNSWBusinessDays includes Easter and mandated days that don't necessarily follow a standard date or something like 2nd Monday of the month pattern.
